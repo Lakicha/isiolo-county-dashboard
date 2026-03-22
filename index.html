@@ -1,92 +1,653 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Isiolo County Dashboard</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Isiolo County · Projects Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@700;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+:root{
+  --navy:#0a2342;--navy2:#0e2f57;--navy3:#1a4a7a;
+  --green:#1a7a4a;--green2:#22a05f;--green-l:#d4f0e2;--green-xl:#edfaf3;
+  --gold:#b8860b;--gold-l:#fef6dc;
+  --red:#b91c1c;--red-l:#fef2f2;
+  --blue:#1d4ed8;--blue-l:#eff6ff;
+  --teal:#0d9488;
+  --g50:#f8fafc;--g100:#f1f5f9;--g200:#e2e8f0;--g300:#cbd5e1;
+  --g400:#94a3b8;--g500:#64748b;--g600:#475569;--g700:#334155;
+  --g800:#1e293b;--g900:#0f172a;
+  --sur:#fff;--bg:#f0f4f8;
+  --ff:'Inter',sans-serif;--fd:'Merriweather',Georgia,serif;
+  --sh0:0 1px 2px rgba(0,0,0,.06);
+  --sh1:0 1px 4px rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.04);
+  --sh2:0 4px 16px rgba(0,0,0,.10);
+  --sh3:0 8px 32px rgba(0,0,0,.13);
+}
+body{font-family:var(--ff);font-size:14px;color:var(--g800);background:var(--bg)}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--g300);border-radius:4px}
 
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+/* ── APP SHELL ───────────────────────────────────────────── */
+#app{display:flex;height:100vh;overflow:hidden}
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+/* ── SIDEBAR ─────────────────────────────────────────────── */
+#sb{width:256px;min-width:256px;background:var(--navy);display:flex;flex-direction:column;overflow:hidden;transition:width .25s ease,min-width .25s ease;flex-shrink:0;z-index:50}
+#sb.slim{width:58px;min-width:58px}
 
-  <style>
-    body { background: #f5f7fa }
-    .card { border-radius: 12px }
-    .metric { font-size: 24px; font-weight: bold }
-    .insight { background: #fff3cd; padding: 15px; border-radius: 10px }
-  </style>
+.sb-brand{padding:16px 14px;display:flex;align-items:center;gap:11px;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;overflow:hidden}
+.sb-logo{width:42px;height:42px;min-width:42px;border-radius:50%;background:#fff;object-fit:contain;padding:3px;flex-shrink:0;box-shadow:0 0 0 2px rgba(255,255,255,.15)}
+#sb.slim .sb-logo{width:36px;height:36px;min-width:36px}
+.sb-brand-txt{overflow:hidden;white-space:nowrap}
+.sb-brand-txt .t1{font-size:10px;font-weight:700;color:#e2e8f0;text-transform:uppercase;letter-spacing:.05em}
+.sb-brand-txt .t2{font-size:12px;font-weight:700;color:var(--green2);margin-top:1px}
+.sb-brand-txt .t3{font-size:9.5px;color:#475569;margin-top:1px}
+
+.sb-search{padding:11px 11px 7px;flex-shrink:0;overflow:hidden}
+.sb-si{position:relative}
+.sb-si input{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.09);border-radius:8px;padding:7px 10px 7px 28px;font-size:12px;color:#e2e8f0;outline:none;font-family:inherit}
+.sb-si input::placeholder{color:#475569}
+.sb-si input:focus{border-color:var(--green2)}
+.sb-si-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:11px;color:#475569;pointer-events:none}
+
+.sb-nav{padding:8px 10px 4px;flex-shrink:0}
+.sb-lbl{font-size:9px;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:.1em;padding:0 8px 5px;white-space:nowrap;overflow:hidden}
+.sb-btn{width:100%;display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;font-size:12.5px;font-weight:500;margin-bottom:1px;color:#94a3b8;border-left:2px solid transparent;transition:all .15s;white-space:nowrap;overflow:hidden}
+.sb-btn:hover{background:rgba(255,255,255,.07);color:#e2e8f0}
+.sb-btn.active{background:rgba(26,122,74,.2);color:var(--green2);border-left-color:var(--green2);font-weight:600}
+.sb-btn .ico{font-size:14px;min-width:18px;text-align:center;flex-shrink:0}
+
+.sb-wards{flex:1;min-height:0;overflow-y:auto;padding:4px 10px 10px}
+.wb{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 10px;border-radius:8px;font-size:12px;color:#94a3b8;font-family:inherit;transition:all .15s;white-space:nowrap}
+.wb:hover{background:rgba(255,255,255,.07);color:#e2e8f0}
+.wb.on{background:rgba(26,122,74,.18);color:var(--green2);font-weight:600}
+.wb .wn{flex:1;text-align:left;overflow:hidden;text-overflow:ellipsis}
+.wchip{font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;background:rgba(255,255,255,.07);color:#475569;flex-shrink:0}
+.wb.on .wchip{background:rgba(26,122,74,.25);color:var(--green2)}
+
+.sb-foot{padding:10px 11px;border-top:1px solid rgba(255,255,255,.06);flex-shrink:0}
+.sb-coll{width:100%;display:flex;align-items:center;gap:6px;justify-content:flex-end;color:#475569;font-size:11.5px;padding:6px;border-radius:8px;transition:all .15s}
+.sb-coll:hover{background:rgba(255,255,255,.06);color:#94a3b8}
+#sb.slim .sb-coll{justify-content:center}
+
+/* ── OVERLAY ─────────────────────────────────────────────── */
+#ovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:40;backdrop-filter:blur(2px);opacity:0;transition:opacity .25s}
+#ovl.on{display:block;opacity:1;pointer-events:all}
+
+/* ── MAIN ────────────────────────────────────────────────── */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+.topbar{background:var(--sur);border-bottom:1px solid var(--g200);padding:0 24px;height:56px;display:flex;align-items:center;gap:12px;flex-shrink:0;box-shadow:var(--sh0)}
+.tb-menu{font-size:20px;color:var(--g500);padding:4px;border-radius:8px;display:none}
+.tb-menu:hover{background:var(--g100)}
+.breadcrumb{flex:1;display:flex;align-items:center;gap:5px;font-size:12.5px;color:var(--g400);overflow:hidden;white-space:nowrap}
+.bc-cur{color:var(--navy);font-weight:600}
+.tb-r{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.tb-dt{font-size:11.5px;color:var(--g400);white-space:nowrap}
+.btn-exp{display:inline-flex;align-items:center;gap:6px;background:var(--navy);color:#fff;border-radius:8px;padding:8px 16px;font-size:12.5px;font-weight:600;font-family:inherit;transition:background .15s;white-space:nowrap}
+.btn-exp:hover{background:var(--navy2)}
+
+#content{flex:1;overflow-y:auto;overflow-x:hidden;padding:22px 24px 28px}
+
+/* pages */
+.page{display:none}
+.page.active{display:block}
+
+/* ── SHARED ──────────────────────────────────────────────── */
+.ph{border-left:4px solid var(--green);padding-left:14px;margin-bottom:20px}
+.ph h1{font-family:var(--fd);font-size:19px;font-weight:900;color:var(--navy);line-height:1.25}
+.ph p{font-size:12.5px;color:var(--g500);margin-top:3px}
+.card{background:var(--sur);border:1px solid var(--g200);border-radius:12px;box-shadow:var(--sh0)}
+.card-p{padding:18px 20px}
+.card-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.card-title span{font-size:11.5px;color:var(--g400);font-weight:400}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+
+/* stat card */
+.sc{background:var(--sur);border:1px solid var(--g200);border-radius:12px;padding:16px 18px;box-shadow:var(--sh0);position:relative;overflow:hidden;transition:box-shadow .2s,transform .15s}
+.sc:hover{box-shadow:var(--sh2);transform:translateY(-1px)}
+.sc-bar{position:absolute;top:0;left:0;right:0;height:3px}
+.sc-lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--g500);margin-bottom:5px}
+.sc-row{display:flex;align-items:flex-end;justify-content:space-between}
+.sc-n{font-family:var(--fd);font-size:34px;font-weight:900;color:var(--navy);line-height:1}
+.sc-ico{font-size:22px;opacity:.45}
+.sc-foot{font-size:11.5px;color:var(--g400);margin-top:7px}
+.sc-foot b{font-weight:700}
+
+/* badge */
+.bdg{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap}
+
+/* progress */
+.prg{display:flex;align-items:center;gap:8px;min-width:110px}
+.prg-t{flex:1;height:5px;background:var(--g100);border-radius:3px;overflow:hidden}
+.prg-f{height:100%;border-radius:3px}
+.prg-l{font-size:11px;color:var(--g400);min-width:28px;text-align:right;font-weight:500}
+
+/* ── TABLE ───────────────────────────────────────────────── */
+.tbl-card{background:var(--sur);border:1px solid var(--g200);border-radius:12px;box-shadow:var(--sh0);overflow:hidden}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead tr{background:var(--navy)}
+th{padding:11px 14px;text-align:left;font-size:10.5px;font-weight:700;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;cursor:pointer;user-select:none;transition:color .15s}
+th:hover,th.srt{color:#fff}
+.si{font-size:10px;margin-left:2px;opacity:.45}
+th.srt .si{opacity:1}
+td{padding:10px 14px;border-bottom:1px solid var(--g100);vertical-align:middle}
+tbody tr:hover td{background:var(--green-xl)}
+tbody tr:last-child td{border-bottom:none}
+.tdn{font-weight:600;color:var(--g900);max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.tds{font-size:12px;color:var(--g500);white-space:nowrap}
+.tdd{font-size:12px;color:var(--g600);max-width:125px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+
+/* ── FILTER BAR ──────────────────────────────────────────── */
+.fbar{background:var(--sur);border:1px solid var(--g200);border-radius:12px;padding:10px 14px;box-shadow:var(--sh0);margin-bottom:14px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.fp{display:inline-flex;align-items:center;gap:5px;border-radius:8px;padding:6px 11px;font-size:12px;cursor:pointer;border:1.5px solid var(--g200);background:var(--g50);color:var(--g600);font-family:inherit;transition:all .15s;white-space:nowrap;font-weight:500}
+.fp:hover{border-color:var(--green);color:var(--green);background:var(--green-xl)}
+.fp.fg{background:var(--green-xl);border-color:var(--green);color:var(--green);font-weight:600}
+.fp.fb{background:var(--blue-l);border-color:var(--blue);color:var(--blue);font-weight:600}
+.fbd{font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;color:#fff}
+.ddw{position:relative}
+.ddp{display:none;position:absolute;top:calc(100% + 5px);left:0;z-index:400;background:var(--sur);border:1px solid var(--g200);border-radius:12px;box-shadow:var(--sh3);padding:8px;min-width:215px;max-height:285px;overflow-y:auto}
+.ddp.open{display:block}
+.ddi{display:flex;align-items:center;gap:8px;padding:7px 10px;cursor:pointer;border-radius:8px;font-size:12.5px;color:var(--g700);transition:background .1s}
+.ddi:hover{background:var(--g50)}
+.ddi input{accent-color:var(--green);cursor:pointer;flex-shrink:0}
+.div1{width:1px;height:20px;background:var(--g200);flex-shrink:0}
+.din{border:1.5px solid var(--g200);border-radius:8px;padding:6px 9px;font-size:12px;color:var(--g700);background:var(--g50);outline:none;font-family:inherit;transition:border .15s}
+.din:focus{border-color:var(--green)}
+.abadge{background:var(--gold-l);color:#7c5e07;font-size:12px;padding:4px 11px;border-radius:20px;font-weight:600;white-space:nowrap}
+.bclear{background:var(--red-l);color:var(--red);border-radius:8px;padding:6px 11px;font-size:12px;cursor:pointer;font-weight:600;font-family:inherit}
+.bclear:hover{background:#fecaca}
+.rct{margin-left:auto;font-size:12.5px;color:var(--g500);white-space:nowrap}
+
+/* ── PAGER ───────────────────────────────────────────────── */
+.pgr{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--g100);background:var(--g50);flex-wrap:wrap;gap:8px}
+.pgi{font-size:12.5px;color:var(--g500)}
+.pgbs{display:flex;gap:3px;flex-wrap:wrap}
+.pgb{padding:5px 11px;border-radius:8px;border:1.5px solid var(--g200);background:var(--sur);color:var(--g600);cursor:pointer;font-size:12px;font-family:inherit;font-weight:500;transition:all .15s}
+.pgb:hover:not([disabled]){background:var(--green-xl);border-color:var(--green);color:var(--green)}
+.pgb[disabled]{background:var(--g50);color:var(--g300);cursor:default;border-color:var(--g100)}
+.pgb.cur{background:var(--navy);color:#fff;border-color:var(--navy);font-weight:700}
+
+/* ── OVERVIEW PAGE ───────────────────────────────────────── */
+.hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 60%,var(--navy3) 100%);border-radius:14px;padding:28px 32px;color:#fff;margin-bottom:18px;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04)}
+.hero h2{font-family:var(--fd);font-size:22px;font-weight:900;margin-bottom:6px;line-height:1.3}
+.hero p{font-size:13px;color:rgba(255,255,255,.65);max-width:560px;line-height:1.6}
+.hero-chips{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.hchip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 12px;font-size:11.5px;font-weight:600;color:rgba(255,255,255,.85)}
+.hchip.g{background:rgba(26,122,74,.4);border-color:rgba(34,160,95,.5);color:#a7f3d0}
+
+/* ── WARDS PAGE ──────────────────────────────────────────── */
+.ward-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:18px}
+.wcard{background:var(--sur);border:1px solid var(--g200);border-radius:12px;padding:16px 18px;box-shadow:var(--sh0);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.wcard:hover{box-shadow:var(--sh2);transform:translateY(-2px);border-color:var(--green)}
+.wcard.sel{border-color:var(--green);box-shadow:0 0 0 3px var(--green-l),var(--sh2)}
+.wcard-bar{height:3px;border-radius:2px;margin-bottom:12px}
+.wcard-name{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.wcard-ct{font-size:28px;font-weight:900;font-family:var(--fd);color:var(--navy);line-height:1}
+.wcard-lbl{font-size:11px;color:var(--g400);margin-top:2px}
+.wcard-row{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.wmini{font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:20px}
+
+/* ── REPORTS PAGE ────────────────────────────────────────── */
+.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.dept-table table{font-size:12.5px}
+.dept-table th{background:var(--g50);color:var(--g600);font-size:10.5px;padding:9px 12px;border-bottom:2px solid var(--g200)}
+.dept-table td{padding:9px 12px;border-bottom:1px solid var(--g100)}
+.dept-table tr:last-child td{border:none}
+.dept-table tbody tr:hover td{background:var(--green-xl)}
+.rate-bar{display:flex;align-items:center;gap:8px}
+.rate-track{flex:1;height:8px;background:var(--g100);border-radius:4px;overflow:hidden;min-width:60px}
+.rate-fill{height:100%;border-radius:4px;background:var(--green)}
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+.footer{text-align:center;padding:14px 0 2px;font-size:11.5px;color:var(--g400);border-top:1px solid var(--g200);margin-top:6px}
+.footer a{color:var(--green)}
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media(max-width:1100px){.grid4{grid-template-columns:repeat(2,1fr)}.report-grid{grid-template-columns:1fr}.tb-dt{display:none}}
+@media(max-width:900px){.report-grid{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}}
+@media(max-width:768px){
+  html,body{overflow:hidden}
+  #sb{position:fixed;top:0;left:0;height:100%;z-index:200;transform:translateX(-100%);transition:transform .25s ease;width:256px!important;min-width:256px!important}
+  #sb.mob-open{transform:none}
+  #main{width:100%}
+  .topbar{padding:0 14px}
+  .tb-menu{display:block}
+  #content{padding:14px 14px 20px}
+  .grid4{grid-template-columns:1fr 1fr;gap:10px}
+  .sc-n{font-size:26px}
+  .ward-cards{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+  .btn-exp .lbl{display:none}
+  .hero{padding:20px 20px}
+  .hero h2{font-size:17px}
+}
+@media(max-width:480px){
+  .grid4{grid-template-columns:1fr 1fr}
+  .sc-n{font-size:22px}
+  #content{padding:12px 12px 16px}
+  .ph h1{font-size:16px}
+}
+</style>
 </head>
-
 <body>
-<div class="container my-4">
+<div id="ovl" onclick="closeMob()"></div>
+<div id="app">
 
-  <h2 class="mb-4">Isiolo County Health & Nutrition Dashboard</h2>
+<!-- ── SIDEBAR ─────────────────────────────────────────── -->
+<aside id="sb">
+  <div class="sb-brand">
+    <img src="data:image/jpeg;base64,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" class="sb-logo" alt="Isiolo County"/>
+    <div class="sb-brand-txt" id="sbTxt">
+      <div class="t1">County Government</div>
+      <div class="t2">of Isiolo</div>
+      <div class="t3">Centre of Excellence</div>
+    </div>
+  </div>
+  <div class="sb-search" id="sbSrch">
+    <div class="sb-si">
+      <span class="sb-si-icon">🔍</span>
+      <input id="searchBox" placeholder="Search projects…" oninput="onQ(this.value)"/>
+    </div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-lbl" id="sbNavLbl">Navigation</div>
+    <button class="sb-btn active" id="nav-overview"  onclick="goPage('overview')"> <span class="ico">🏠</span><span class="lbl"> Overview</span></button>
+    <button class="sb-btn"        id="nav-projects"  onclick="goPage('projects')"> <span class="ico">📋</span><span class="lbl"> Projects</span></button>
+    <button class="sb-btn"        id="nav-wards"     onclick="goPage('wards')">    <span class="ico">🗺️</span><span class="lbl"> Wards</span></button>
+    <button class="sb-btn"        id="nav-reports"   onclick="goPage('reports')">  <span class="ico">📊</span><span class="lbl"> Reports</span></button>
+  </div>
+  <div class="sb-wards" id="sbWards">
+    <div class="sb-lbl">Wards</div>
+    <div id="wardBtns"></div>
+  </div>
+  <div class="sb-foot">
+    <button class="sb-coll" id="sbCollBtn" onclick="toggleSb()">
+      <span id="sbArr" style="font-size:14px">←</span>
+      <span id="sbCollTxt"> Collapse</span>
+    </button>
+  </div>
+</aside>
 
-  <div class="row g-3 mb-4">
-    <div class="col-md-3"><div class="card p-3"><div>Malnutrition Rate</div><div class="metric text-danger">18% ↑</div></div></div>
-    <div class="col-md-3"><div class="card p-3"><div>Health Visits</div><div class="metric">12,450 ↑</div></div></div>
-    <div class="col-md-3"><div class="card p-3"><div>Water Access</div><div class="metric text-success">62% ↑</div></div></div>
-    <div class="col-md-3"><div class="card p-3"><div>Active Projects</div><div class="metric">14</div></div></div>
+<!-- ── MAIN ────────────────────────────────────────────── -->
+<main id="main">
+  <div class="topbar">
+    <button class="tb-menu" onclick="openMob()">☰</button>
+    <nav class="breadcrumb">
+      <span>Home</span><span style="margin:0 4px;color:var(--g300)">›</span>
+      <span id="bcPage" class="bc-cur">Overview</span>
+    </nav>
+    <div class="tb-r">
+      <span class="tb-dt" id="tbDt"></span>
+      <button class="btn-exp" onclick="doExport()">
+        <span>⬇</span><span class="lbl"> Export CSV</span><span id="expCt"></span>
+      </button>
+    </div>
   </div>
 
-  <div class="row mb-4">
-    <div class="col-md-6"><div class="card p-3"><h5>Malnutrition Trend</h5><canvas id="malnutritionChart"></canvas></div></div>
-    <div class="col-md-6"><div class="card p-3"><h5>Facility Visits</h5><canvas id="visitsChart"></canvas></div></div>
-  </div>
+  <div id="content">
 
-  <div class="card p-3 mb-4">
-    <h5>Projects Tracker</h5>
-    <table class="table">
-      <thead><tr><th>Project</th><th>Location</th><th>Status</th><th>Progress</th></tr></thead>
-      <tbody>
-        <tr><td>Borehole Drilling</td><td>Sericho</td><td>Ongoing</td><td>70%</td></tr>
-        <tr><td>Nutrition Program</td><td>Merti</td><td>Delayed</td><td>40%</td></tr>
-        <tr><td>Facility Upgrade</td><td>Garbatulla</td><td>Complete</td><td>100%</td></tr>
-      </tbody>
-    </table>
-  </div>
+    <!-- ══ OVERVIEW PAGE ══════════════════════════════════ -->
+    <div class="page active" id="page-overview">
+      <div class="hero">
+        <h2 id="heroH">Isiolo County Projects Portfolio</h2>
+        <p>Real-time visibility into all county government projects across 11 wards — track progress, monitor delivery, and drive accountability.</p>
+        <div class="hero-chips">
+          <span class="hchip" id="heroTotal">— Projects</span>
+          <span class="hchip g" id="heroDone">— Completed</span>
+          <span class="hchip" id="heroWards">11 Wards</span>
+          <span class="hchip" id="heroFY">FY 2024/25</span>
+        </div>
+      </div>
+      <div class="grid4">
+        <div class="sc"><div class="sc-bar" style="background:var(--navy)"></div><div class="sc-lbl">Total Projects</div><div class="sc-row"><div class="sc-n" id="stTotal">—</div><div class="sc-ico">📁</div></div><div class="sc-foot">Full county portfolio</div></div>
+        <div class="sc"><div class="sc-bar" style="background:var(--green)"></div><div class="sc-lbl">Completed</div><div class="sc-row"><div class="sc-n" id="stDone">—</div><div class="sc-ico">✅</div></div><div class="sc-foot"><b id="stDonePct" style="color:var(--green)">—</b> completion rate</div></div>
+        <div class="sc"><div class="sc-bar" style="background:var(--blue)"></div><div class="sc-lbl">Ongoing</div><div class="sc-row"><div class="sc-n" id="stGoing">—</div><div class="sc-ico">🔄</div></div><div class="sc-foot"><b id="stGoingPct" style="color:var(--blue)">—</b> of portfolio</div></div>
+        <div class="sc"><div class="sc-bar" style="background:var(--gold)"></div><div class="sc-lbl">Planned</div><div class="sc-row"><div class="sc-n" id="stPlan">—</div><div class="sc-ico">📅</div></div><div class="sc-foot"><b id="stPlanPct" style="color:var(--gold)">—</b> of portfolio</div></div>
+      </div>
+      <div class="grid2" style="margin-bottom:16px">
+        <div class="card card-p">
+          <div class="card-title">Projects by Ward <span>All wards</span></div>
+          <div id="barArea" style="width:100%;height:195px"></div>
+        </div>
+        <div class="card card-p">
+          <div class="card-title">Status Breakdown <span id="donutLbl"></span></div>
+          <div style="display:flex;align-items:center;gap:16px">
+            <div style="position:relative;width:145px;height:145px;flex-shrink:0">
+              <svg id="donutSvg" width="145" height="145" viewBox="0 0 145 145"></svg>
+              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none">
+                <div id="donutN" style="font-family:var(--fd);font-size:25px;font-weight:900;color:var(--navy);line-height:1">—</div>
+                <div style="font-size:10px;color:var(--g400)">total</div>
+              </div>
+            </div>
+            <div id="donutLeg" style="flex:1;min-width:0"></div>
+          </div>
+        </div>
+      </div>
+      <div class="footer">County Government of Isiolo &nbsp;·&nbsp; H.E. Abdi Ibrahim Hassan, Governor &nbsp;·&nbsp; <a href="https://www.isiolo.go.ke">www.isiolo.go.ke</a></div>
+    </div>
 
-  <div class="insight">
-    <strong>Insights:</strong><br>
-    - Malnutrition rising in Merti<br>
-    - Garbatulla leads visits<br>
-    - 2 projects behind schedule
-  </div>
+    <!-- ══ PROJECTS PAGE ══════════════════════════════════ -->
+    <div class="page" id="page-projects">
+      <div class="ph"><h1>All Projects</h1><p id="projSubtitle"></p></div>
+      <div class="fbar">
+        <div class="ddw">
+          <button class="fp" id="wPill" onclick="togDD('wDD',event)">🗺️ Ward <span id="wBdg"></span> ▾</button>
+          <div class="ddp" id="wDD"><div id="wDDc"></div></div>
+        </div>
+        <div class="ddw">
+          <button class="fp" id="sPill" onclick="togDD('sDD',event)">📊 Status <span id="sBdg"></span> ▾</button>
+          <div class="ddp" id="sDD"><div id="sDDc"></div></div>
+        </div>
+        <div class="div1"></div>
+        <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
+          <input type="date" class="din" id="dFrom" onchange="onDate()"/>
+          <span style="font-size:12px;color:var(--g300)">→</span>
+          <input type="date" class="din" id="dTo" onchange="onDate()"/>
+        </div>
+        <span class="abadge" id="actBdg" style="display:none"></span>
+        <button class="bclear" id="btnClr" style="display:none" onclick="doClear()">✕ Clear</button>
+        <span class="rct" id="resCt"></span>
+      </div>
+      <div class="tbl-card">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th onclick="doSort('n')" id="th_n" style="min-width:240px">Project Name <span class="si" id="si_n">⇅</span></th>
+              <th onclick="doSort('s')" id="th_s" style="min-width:130px">Status <span class="si" id="si_s">⇅</span></th>
+              <th onclick="doSort('p')" id="th_p" style="min-width:135px">Progress <span class="si" id="si_p">⇅</span></th>
+              <th onclick="doSort('w')" id="th_w" style="min-width:105px">Ward <span class="si" id="si_w">⇅</span></th>
+              <th onclick="doSort('d')" id="th_d" style="min-width:130px">Department <span class="si" id="si_d">⇅</span></th>
+              <th onclick="doSort('sd')" id="th_sd" style="min-width:98px">Start <span class="si" id="si_sd">⇅</span></th>
+              <th onclick="doSort('ed')" id="th_ed" style="min-width:98px">End <span class="si" id="si_ed">⇅</span></th>
+            </tr></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <div class="pgr"><div class="pgi" id="pgInfo"></div><div class="pgbs" id="pgBtns"></div></div>
+      </div>
+      <div class="footer" style="margin-top:14px">County Government of Isiolo &nbsp;·&nbsp; <a href="https://www.isiolo.go.ke">www.isiolo.go.ke</a></div>
+    </div>
 
+    <!-- ══ WARDS PAGE ══════════════════════════════════════ -->
+    <div class="page" id="page-wards">
+      <div class="ph"><h1>Wards Explorer</h1><p>Click any ward card to filter and view its projects below.</p></div>
+      <div class="ward-cards" id="wardCards"></div>
+      <div class="tbl-card" id="wardTblCard">
+        <div style="padding:14px 18px;background:var(--navy);display:flex;align-items:center;justify-content:space-between">
+          <span id="wardTblTitle" style="font-size:13.5px;font-weight:700;color:#fff">Select a ward above</span>
+          <span id="wardTblCount" style="font-size:12px;color:rgba(255,255,255,.5)"></span>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th style="min-width:240px">Project Name</th>
+              <th style="min-width:130px">Status</th>
+              <th style="min-width:135px">Progress</th>
+              <th style="min-width:130px">Department</th>
+              <th style="min-width:98px">Start</th>
+              <th style="min-width:98px">End</th>
+            </tr></thead>
+            <tbody id="wardTbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="footer" style="margin-top:14px">County Government of Isiolo &nbsp;·&nbsp; <a href="https://www.isiolo.go.ke">www.isiolo.go.ke</a></div>
+    </div>
+
+    <!-- ══ REPORTS PAGE ════════════════════════════════════ -->
+    <div class="page" id="page-reports">
+      <div class="ph"><h1>Analytics &amp; Reports</h1><p>Department performance, completion rates and ward-level breakdowns.</p></div>
+      <div class="report-grid">
+        <!-- Dept table -->
+        <div class="card">
+          <div class="card-p" style="padding-bottom:0">
+            <div class="card-title">By Department <span>completion rate</span></div>
+          </div>
+          <div class="dept-table" id="deptTable"></div>
+        </div>
+        <!-- Ward completion -->
+        <div class="card card-p">
+          <div class="card-title">Ward Completion Rate</div>
+          <div id="wardRates"></div>
+        </div>
+      </div>
+      <div class="report-grid">
+        <!-- Status summary -->
+        <div class="card card-p">
+          <div class="card-title">Status Summary</div>
+          <div id="statusSummary"></div>
+        </div>
+        <!-- Top departments bar -->
+        <div class="card card-p">
+          <div class="card-title">Projects by Department <span>top 10</span></div>
+          <div id="deptBarArea" style="width:100%;height:220px"></div>
+        </div>
+      </div>
+      <div class="footer">County Government of Isiolo &nbsp;·&nbsp; <a href="https://www.isiolo.go.ke">www.isiolo.go.ke</a></div>
+    </div>
+
+  </div><!-- /content -->
+</main>
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-  if (typeof Chart !== "undefined") {
-    new Chart(document.getElementById('malnutritionChart'), {
-      type: 'line',
-      data: {
-        labels: ['Jan','Feb','Mar','Apr','May'],
-        datasets: [{
-          label: 'Malnutrition %',
-          data: [12,14,13,16,18],
-          borderColor: 'rgba(255,99,132,1)',
-          backgroundColor:'rgba(255,99,132,0.2)',
-          borderWidth:2
-        }]
-      }
-    });
+// ── DATA ─────────────────────────────────────────────────────
+const P=[{"n": "Completion and Operationalization of Isiolo Hatchery at Isiolo Fish Farm", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Fisheries", "p": 100, "w": "Bulapesa"}, {"n": "Construction of Bulapesa stage  boda boda stage shades", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Sports", "p": 0, "w": "Bulapesa"}, {"n": "Construction of Mukku stage boda boda shades", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Sports", "p": 100, "w": "Bulapesa"}, {"n": "Construction of Nyara stage  boda boda shades", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Sports", "p": 100, "w": "Bulapesa"}, {"n": "Construction of consolidated bank  stage boda boda shades", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Sports", "p": 0, "w": "Bulapesa"}, {"n": "Renovation of Farm Offices at Isiolo fish farm", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Bulapesa"}, {"n": "Routine Maintenance for Central Bulapesa Access Roads", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Bulapesa"}, {"n": "Routine Maintenance for Fakir Bridge - Kachewa Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Bulapesa"}, {"n": "Routine Maintenance for Ola Jarole  Access Roads", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Bulapesa"}, {"n": "Construction of ECDE Esimit 8 door  toilet", "s": "Ongoing", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 1, "w": "Burat"}, {"n": "Construction of Kakili ECDE classroom and 4 door Sanitation Facility", "s": "Ongoing", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 1, "w": "Burat"}, {"n": "Construction of Uhuru ECDE classroom and 4 door Sanitation Facility", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Burat"}, {"n": "Isiolo Abattoir Expo Support Building and civil works", "s": "Ongoing", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 98, "w": "Burat"}, {"n": "Isiolo Abattoir Expo SupportProfessional design and consultancy fees", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Burat"}, {"n": "Kenya Urban Support Program (KUSP)-UDG", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Finance", "p": 0, "w": "Burat"}, {"n": "Maintenance and Spot Improvement of Stage - Alamach Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Burat"}, {"n": "Openning of Access road - Ola jarole kachewa bula pesa ward", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Burat"}, {"n": "Rehabilitation of borehole,solarization,storage tanks and piping at Elsa..", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Burat"}, {"n": "Routine Maintenance for Camp Garba Access Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Burat"}, {"n": "construction of Biliqo 8 door ECDE Toilets", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Chari"}, {"n": "construction of Dima ado 8  door ECDE Toilets", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Chari"}, {"n": "Borehole drilling,Equipping and fencing at Buleas - Goda", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Chari"}, {"n": "Construction of Biliqo stage  boda boda stage shades", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Sports", "p": 0, "w": "Chari"}, {"n": "Construction of Bulesa stage  boda boda stage shades", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Sports", "p": 0, "w": "Chari"}, {"n": "Maintenance for Biliqo Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Chari"}, {"n": "Maintenance for Dambala Kara Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Chari"}, {"n": "Maintenance for Jn B82 - Kobe Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Chari"}, {"n": "Maintenance for Kom Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Chari"}, {"n": "Construction of  ECDE classroom and 4 door Sanitation Facility  at Badan Raro", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Cherab"}, {"n": "Construction of ECDE classroom ECDE Classrom  at Gotha Rupa", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Cherab"}, {"n": "Construction of ECDE classroom and 4 door Sanitation Facility   at Biliqi Nur", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Cherab"}, {"n": "Construction of ECDE classroom and 4 door Sanitation Facility at Alango", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Cherab"}, {"n": "Construction of ECDE malkagalla 4  door  toilet", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Cherab"}, {"n": "Construction of ECDE mata arba 4 door  toilet", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Cherab"}, {"n": "Construction of Merti Muslim Girls ECDE classroom and 4 door Sanitation Facility", "s": "Ongoing", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 1, "w": "Cherab"}, {"n": "Construction of Saleti ECDE classroom and 4 door Sanitation Facility", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Cherab"}, {"n": "20 Km Pipeline new line system Alango to Bassa Pipeline", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Sports", "p": 100, "w": "Cherab"}, {"n": "Borehole drilling,Fencing and piping at Bassa", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Cherab"}, {"n": "Cherab ward - Isiolo county", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Cherab"}, {"n": "Clearing Invasive species and reseeding in Merti", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Cherab"}, {"n": "Construction of Merti south boda boda stage shades", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Sports", "p": 0, "w": "Cherab"}, {"n": "Construction of Subcounty Playfield at Merti Town", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Sports", "p": 0, "w": "Cherab"}, {"n": "Construction of merti North   boda boda stage shades", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Sports", "p": 0, "w": "Cherab"}, {"n": "Fencing of rahma women group garden", "s": "Not Started", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Cherab"}, {"n": "Maintenance for Bisiq Diqa Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Cherab"}, {"n": "Maintenance for Chimpi Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Cherab"}, {"n": "Maintenance for Gololicha Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Cherab"}, {"n": "Maintenance for Malka Galla - Urura Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Cherab"}, {"n": "Maintenance for Nano Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Cherab"}, {"n": "Maintenance for Yamicha Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Cherab"}, {"n": "Maintenance of Merti - Lakole Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Cherab"}, {"n": "Routine Maintenace for Dogogicha Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Cherab"}, {"n": "Climate change institutional support (FLLoCA)", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Sports", "p": 0, "w": "Garbatulla"}, {"n": "Construction of Kombola 1 ECDE classroom and 4 door Sanitation Facility", "s": "Ongoing", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 1, "w": "Garbatulla"}, {"n": "Construction of Kombola 2 ECDE classroom and 4 door Sanitation Facility", "s": "Ongoing", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 1, "w": "Garbatulla"}, {"n": "Borehole drilling, solar equipping, elevated storage tank and distribution pipeline in Garbatulla", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Garbatulla"}, {"n": "Borehole drilling, solar equipping, elevated storage tank and distribution pipeline in Kombola", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Garbatulla"}, {"n": "Construction of Garbatulla  boda boda stage shades", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Sports", "p": 0, "w": "Garbatulla"}, {"n": "Fencing of boji  Dispensry", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Garbatulla"}, {"n": "Garbatulla ward - Isiolo county", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Garbatulla"}, {"n": "Garbatulla ward - Isiolo county.", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Garbatulla"}, {"n": "Maintenance for Gafarsa - Quq Saala Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Garbatulla"}, {"n": "Maintenance for Komor - Hilowle Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Garbatulla"}, {"n": "Maintenance for Kuro Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Garbatulla"}, {"n": "Maintenance for Maratho - Jn B83 Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Garbatulla"}, {"n": "Maintenance for Mogore Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Garbatulla"}, {"n": "Maintenance for Mume Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Garbatulla"}, {"n": "Maintenance for Tanna Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Garbatulla"}, {"n": "in Garbatulla ward - Isiolo county", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Garbatulla"}, {"n": "Construction of Kulamawe ECDE classroom and 4 door Sanitation Facility", "s": "Ongoing", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 1, "w": "Kinna"}, {"n": "Construction of Rapsu ECDE classroom and 4 door Sanitation Facilit", "s": "Ongoing", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 1, "w": "Kinna"}, {"n": "Completion Works at Kinna VTC", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Kinna"}, {"n": "Establishment of fodder farm at Rapsu.", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Kinna"}, {"n": "Fencing of Kinna livestock market", "s": "Not Started", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Kinna"}, {"n": "Maintenance for Barambate Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Kinna"}, {"n": "Maintenance for Funan Qoticha Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Kinna"}, {"n": "Maintenance for Machesa Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Kinna"}, {"n": "Maintenance of Gotu Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Kinna"}, {"n": "pipeline connection of Barambate trading centre  from borehole to Ola Msaajid", "s": "Not Started", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Sports", "p": 0, "w": "Kinna"}, {"n": "survey and planning  kinna and kulamawe cementries", "s": "Not Started", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Kinna"}, {"n": "Construction of ECDE and 4 door Sanitation Facility at Gambella", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Ngaremara"}, {"n": "Construction of ECDE classroom Attir and 4 door Sanitation Facility", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Ngaremara"}, {"n": "Construction of Epiding',ECDE classroom and 4 door Sanitation Facility", "s": "Ongoing", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 1, "w": "Ngaremara"}, {"n": "Construction of Kisile ECDE classroomand 4 door Sanitation Facility", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Ngaremara"}, {"n": "Construction of Tractor ECDE classroom and 4 door Sanitation Facility", "s": "Ongoing", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 1, "w": "Ngaremara"}, {"n": "Clearing of Invasive Species (Prosopis Juliflora) and reseeding.", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Ngaremara"}, {"n": "Construction  of Ngaremara bodaboda shades", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Sports", "p": 0, "w": "Ngaremara"}, {"n": "Construction of Ngaremara Ward Administrator Office", "s": "Not Started", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Ngaremara"}, {"n": "Construction of restroom at Natural swimming pool", "s": "Not Started", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Ngaremara"}, {"n": "Establishment of Ngaremara  slaughterhouse phase 1", "s": "Not Started", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Livestock", "p": 0, "w": "Ngaremara"}, {"n": "Lowangila dispensary", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Ngaremara"}, {"n": "Maintenance for Catholic - Kisile Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Ngaremara"}, {"n": "Routine Maintenance and Spot Improvement of Chumvi yare Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Ngaremara"}, {"n": "Construction of ECDE Siangaun ECDE", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Oldonyiro"}, {"n": "Construction of Lagarama ECDE classroom and 4 door Sanitation Facility", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Oldonyiro"}, {"n": "Construction of Loiborkwe, ECDE classroom and 4 door Sanitation Facility", "s": "Ongoing", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 1, "w": "Oldonyiro"}, {"n": "4 Km Pipeline extension system with tank at Parkuruk- Rap Primary", "s": "Not Started", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Sports", "p": 0, "w": "Oldonyiro"}, {"n": "Capitation grant for VTCs", "s": "Ongoing", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Finance", "p": 50, "w": "Oldonyiro"}, {"n": "Completion and Equipping of the Member of County Assembly Offices", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Administration", "p": 0, "w": "Oldonyiro"}, {"n": "Construction of Oldonyiro bodaboda shades", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Sports", "p": 0, "w": "Oldonyiro"}, {"n": "Construction of Sand Revenue Access Points/Roads", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Finance", "p": 100, "w": "Oldonyiro"}, {"n": "Construction of Subcounty Playfield at Kipsing'", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Sports", "p": 0, "w": "Oldonyiro"}, {"n": "Construction of a New primary care facility at Parkuruk", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Oldonyiro"}, {"n": "County spatial plan", "s": "Ongoing", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Lands & Planning", "p": 50, "w": "Oldonyiro"}, {"n": "Current Capital Grants (Danida)", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Finance", "p": 0, "w": "Oldonyiro"}, {"n": "Current capital Grants (County Contribution)- Community Led Total Sanitation; UNICEF", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Finance", "p": 0, "w": "Oldonyiro"}, {"n": "Current capital Grants (County Contribution)- Danida", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Finance", "p": 0, "w": "Oldonyiro"}, {"n": "Emergency Locust Response Program (ELRP)", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Agriculture", "p": 0, "w": "Oldonyiro"}, {"n": "Equipping of Social Halls", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Education", "p": 0, "w": "Oldonyiro"}, {"n": "Financing Locally Led Climate Action( FLLoCA)- Nat. Govt. (climate change resielient project", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Finance", "p": 0, "w": "Oldonyiro"}, {"n": "Financing Locally Led Climate Action( FLLoCA)- county contribution", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Finance", "p": 0, "w": "Oldonyiro"}, {"n": "Food Systems Resilience Project (FSRP)", "s": "Not Started", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Oldonyiro"}, {"n": "Fruit trees growing program in schools", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Oldonyiro"}, {"n": "Hydrogeological surveys", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Health", "p": 100, "w": "Oldonyiro"}, {"n": "Installation of 50M3 Storage tank (New) (Oldonyiro)", "s": "Not Started", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Sports", "p": 0, "w": "Oldonyiro"}, {"n": "Installation of solar street lights", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Sports", "p": 0, "w": "Oldonyiro"}, {"n": "Isiolo County Emergency Fund Act Implementation Programme", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Special Programs", "p": 100, "w": "Oldonyiro"}, {"n": "Kenya Agricultural Business Development Project (KABDP)-County Conribution", "s": "Not Started", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Oldonyiro"}, {"n": "Kenya Agricultural Business Development Project (KABDP)-GOS", "s": "Not Started", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Oldonyiro"}, {"n": "Kenya Agricultural Business Development Project (KABDP)-MOALD", "s": "Not Started", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Oldonyiro"}, {"n": "Kipsing Boda boda shades", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Sports", "p": 0, "w": "Oldonyiro"}, {"n": "Lenguruma Dispensary", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Oldonyiro"}, {"n": "Oldonyiro", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Oldonyiro"}, {"n": "Oldonyiro ward - Isiolo county.", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Oldonyiro"}, {"n": "Openning of Access Road at AP Line -Elephant Corridor and next to ward offices joining market", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Oldonyiro"}, {"n": "Purchase of  2 fully Ambulances", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 0, "w": "Oldonyiro"}, {"n": "Rehabilitation of broken down boreholes at all wards", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Sports", "p": 100, "w": "Oldonyiro"}, {"n": "Roads maintenance across the county", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Oldonyiro"}, {"n": "Roads maintenance fuel levy Fund", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Oldonyiro"}, {"n": "Routine Maintenace for Kipsing Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Oldonyiro"}, {"n": "Training, Procurement and issuance of bee keeping equipments", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Oldonyiro"}, {"n": "UNFPA Grant", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Finance", "p": 0, "w": "Oldonyiro"}, {"n": "Urban Planning at Oldonyiro Town- Public Participation and data collection  on the Local Physical & Land use plan", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Oldonyiro"}, {"n": "Construction of ECDE classroom and 4 door Sanitation Facility at Erasaboru ECDE", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Sericho"}, {"n": "Construction of Malkamansa ECDE classroom and 4 door Sanitation Facility", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Sericho"}, {"n": "Borehole drilling and construction of   elevated storage tank 50M3 at Gubatu", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Sericho"}, {"n": "Construction of a New primary care facility at Hagarsu- Iresa Boru", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Sericho"}, {"n": "Drilling and Equipping of Iresaboru borehole", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Sericho"}, {"n": "Maintenance for Badana - Biliqi Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Sericho"}, {"n": "Maintenance for Fororsa Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Sericho"}, {"n": "Maintenance for Hagarsu - Badana Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Sericho"}, {"n": "Maintenance for Sericho Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Sericho"}, {"n": "Maintenance for Yato - Gashe Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Sericho"}, {"n": "Maintenance for Yato - Manyangab Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Sericho"}, {"n": "Maintenance of Shabba Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Sericho"}, {"n": "Modogash Mega Water Supply Project Completion", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Infrastructure", "p": 100, "w": "Sericho"}, {"n": "GOVERNMENT OF KENYA -", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Unspecified"}, {"n": "- Isiolo county.", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Unspecified"}, {"n": "A MAINTENANCE & SPOT IMPROVEMENT FOR", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Unspecified"}, {"n": "CONSTRUCTION OF", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Unspecified"}, {"n": "Construction of", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Unspecified"}, {"n": "Drilling and Equipping of Iresaboru", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Unspecified"}, {"n": "ICONSTRUCTION OF FEEDLOF", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Unspecified"}, {"n": "Rehabilitation of Gabaya farm", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Agriculture", "p": 0, "w": "Unspecified"}, {"n": "Rehabilitation of Tiyole farm", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Agriculture", "p": 0, "w": "Unspecified"}, {"n": "Rehabilitation of Uji tante jabes", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Unspecified"}, {"n": "SUPERVISOR: ENGINEER ROADS", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Unspecified"}, {"n": "SUPPLY AND DELIVERY OF", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Unspecified"}, {"n": "Construction of Kisima ECDE classroom and 4 door Sanitation Facility", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Roads", "p": 0, "w": "Wabera"}, {"n": "Airstrip Rehabilitation", "s": "Ongoing", "sd": "2022-07-01", "ed": "2023-06-30", "d": "Transport", "p": 50, "w": "Wabera"}, {"n": "Construction of ECDE classroom at Wabera Primary", "s": "Complete", "sd": "2023-07-01", "ed": "2024-06-30", "d": "Education", "p": 100, "w": "Wabera"}, {"n": "Construction of ECDE classrooms at Kiwanja", "s": "Complete", "sd": "2023-07-01", "ed": "2024-06-30", "d": "Education", "p": 100, "w": "Wabera"}, {"n": "Construction of Game ECDE", "s": "Ongoing", "sd": "2023-07-01", "ed": "2024-06-30", "d": "Education", "p": 50, "w": "Wabera"}, {"n": "Construction of Kambi Juu ECDE Centre", "s": "Complete", "sd": "2022-07-01", "ed": "2023-06-30", "d": "Education", "p": 100, "w": "Wabera"}, {"n": "Construction of Kambi Maji ECDE", "s": "Complete", "sd": "2023-07-01", "ed": "2024-06-30", "d": "Education", "p": 100, "w": "Wabera"}, {"n": "Construction of Kamukuru Box Culvert", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Infrastructure", "p": 0, "w": "Wabera"}, {"n": "Construction of Loturo ECDE Classroom", "s": "Complete", "sd": "2022-07-01", "ed": "2023-06-30", "d": "Education", "p": 100, "w": "Wabera"}, {"n": "Construction of Machinery House", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Infrastructure", "p": 0, "w": "Wabera"}, {"n": "Construction of Oldonyiro Social Hall", "s": "Complete", "sd": "2023-07-01", "ed": "2024-06-30", "d": "Social Services", "p": 100, "w": "Wabera"}, {"n": "Construction of elevated steel tank at Elsa Ntririm", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 0, "w": "Wabera"}, {"n": "Donation to Children homes-ALMASI  Donation, School of Deaf and others", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Agriculture", "p": 0, "w": "Wabera"}, {"n": "Drilling of Akadeli borehole drilling", "s": "Operational", "sd": "FY 2023-07-01", "ed": "2024-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Alkadeli Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Ariamawoi Borehole–", "s": "Ongoing", "sd": "2024-07-01", "ed": "2024-06-30", "d": "Water", "p": 50, "w": "Wabera"}, {"n": "Drilling of Asunyeni Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Attan Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Atulelo Borehole 108m deep", "s": "Operational", "sd": "2024-07-01", "ed": "2024-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Awarsitu Borehole", "s": "Not Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 0, "w": "Wabera"}, {"n": "Drilling of Bisan Biliku Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Bisan Biliqo borehole 2 -SWASAP project", "s": "Operational", "sd": "2024-07-01", "ed": "2024-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Charabticha borehole", "s": "Not Started", "sd": "2024-07-01", "ed": "2024-06-30", "d": "Water", "p": 0, "w": "Wabera"}, {"n": "Drilling of Cherapticha Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Dadachabasa Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Dadachabasa borehole", "s": "Planned", "sd": "FY 2023-07-01", "ed": "2024-06-30", "d": "Water", "p": 0, "w": "Wabera"}, {"n": "Drilling of EMERGENCY LOCUST PROGRAMME  Iresaboru borehole 3cu.m per hour and it is 8km from hargasu", "s": "Ongoing", "sd": "2024-07-01", "ed": "2024-06-30", "d": "Water", "p": 50, "w": "Wabera"}, {"n": "Drilling of Eresaboru Borehole", "s": "Not Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 0, "w": "Wabera"}, {"n": "Drilling of Etop Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Etop Daaba Borehole", "s": "Operational", "sd": "2023-07-01", "ed": "2023-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of FFLOCA Elborte Garbatulla borehole 24m3/hr", "s": "Ongoing", "sd": "2024-07-01", "ed": "2024-06-30", "d": "Water", "p": 50, "w": "Wabera"}, {"n": "Drilling of Gafarsa Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Gafarsa Borehole 2- SWASAP project", "s": "Operational", "sd": "2023-07-01", "ed": "2023-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Garbatulla Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of KOM Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Kakili Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Kakili borehole", "s": "Operational", "sd": "FY 2023-07-01", "ed": "2024-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Kiwanja Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Kiwanja borehole", "s": "Operational", "sd": "FY 2023-07-01", "ed": "2024-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Kombola FFLoCA Borehole 18m3/hr", "s": "Ongoing", "sd": "2024-07-01", "ed": "2024-06-30", "d": "Water", "p": 50, "w": "Wabera"}, {"n": "Drilling of Kombolla Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of LMD (Kilimani)Replacement Borehole", "s": "Operational", "sd": "FY 2023-07-01", "ed": "2024-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of LMD Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Laagaman Borehole", "s": "Not Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 0, "w": "Wabera"}, {"n": "Drilling of Lakole borehole drilling", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 0, "w": "Wabera"}, {"n": "Drilling of Lebarsheriki Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Leparua Borehole", "s": "Operational", "sd": "2023-07-01", "ed": "2023-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of MATARSADEN Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Malkaagalla Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Malkadaka", "s": "Operational", "sd": "2022-07-01", "ed": "2022-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Malkadaka Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Malkagalla borehole", "s": "Not Operational", "sd": "FY 2023-07-01", "ed": "2024-06-30", "d": "Water", "p": 0, "w": "Wabera"}, {"n": "Drilling of Matagari borehole", "s": "Not Operational", "sd": "FY 2023-07-01", "ed": "2024-06-30", "d": "Water", "p": 0, "w": "Wabera"}, {"n": "Drilling of Merti-Lakole Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Nachibenyo shallow borehole 28m deep", "s": "Operational", "sd": "2024-07-01", "ed": "2024-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Qone Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Qurquchi borehole", "s": "Not Operational", "sd": "FY 2023-07-01", "ed": "2024-06-30", "d": "Water", "p": 0, "w": "Wabera"}, {"n": "Drilling of Qurquichi Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Rumate Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of SUKUMA Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Sericho Borehole", "s": "Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Drilling of Sericho FLLOCA Borehole 16m3/hr", "s": "Ongoing", "sd": "2024-07-01", "ed": "2024-06-30", "d": "Water", "p": 50, "w": "Wabera"}, {"n": "Drilling of Sericho Recross borehole 18m3/hr- KRAPID to have a parralle rising main", "s": "Ongoing", "sd": "2022-07-01", "ed": "2022-06-30", "d": "Water", "p": 50, "w": "Wabera"}, {"n": "Drilling of Tuale Borehole", "s": "Not Operational", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 0, "w": "Wabera"}, {"n": "Establishment of Fodder Farm at Karis", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Agriculture", "p": 0, "w": "Wabera"}, {"n": "Excavation/Construction of Malkagalla Water Pan", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water", "p": 0, "w": "Wabera"}, {"n": "Fruit trees growing program in schools", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Wabera"}, {"n": "Fuel Tank Installation Excavation works for fuel tankCabro paving works at the Public works- Fuel Tank", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Wabera"}, {"n": "Isiolo Export Abattoir", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Livestock", "p": 0, "w": "Wabera"}, {"n": "Maintenance for Wabera Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Wabera"}, {"n": "Proposed Construction of Riga Dispensary", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Health", "p": 0, "w": "Wabera"}, {"n": "Proposed Maternity Block at Lenguruma Dispensary", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Health", "p": 0, "w": "Wabera"}, {"n": "Proposed Maternity Block at Mata-arba Dispensary", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Health", "p": 0, "w": "Wabera"}, {"n": "Proposed Repair Works & Equipping of Eldera Dispensary", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Health", "p": 0, "w": "Wabera"}, {"n": "Rehabilitation of Elsa Irrigation Scheme", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Irrigation", "p": 0, "w": "Wabera"}, {"n": "Rehabilitation of Ewaso Water System", "s": "Complete", "sd": "2023-07-01", "ed": "2024-06-30", "d": "Water", "p": 100, "w": "Wabera"}, {"n": "Rehabilitation of Gabaya Farm", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Agriculture", "p": 0, "w": "Wabera"}, {"n": "Rehabilitation of Tiyole Farm", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Agriculture", "p": 0, "w": "Wabera"}, {"n": "Routine Maintenace for Gradors - Jn Muriri Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Wabera"}, {"n": "Routine Maintenance for  Muhajirin Village Access Roads", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Wabera"}, {"n": "Routine Maintenance for A2 - Cemetery  Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Wabera"}, {"n": "Routine Maintenance for Golden Pen Primary Access Roads", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Wabera"}, {"n": "Routine Maintenance for Kiwanjani Access Roads", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Wabera"}, {"n": "Routine Maintenance for Loreto - Jn Brainstar Road", "s": "Complete", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 100, "w": "Wabera"}, {"n": "Supplement Construction of County Headquarters", "s": "Ongoing", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 56, "w": "Wabera"}, {"n": "Supply and Delivery of Meat Pasteurizers", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Livestock", "p": 0, "w": "Wabera"}, {"n": "Supply and Delivery of Meat Processing Equipment", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Livestock", "p": 0, "w": "Wabera"}, {"n": "Valuation Roll at CBD- Wabera, Bulapesa &Burat", "s": "Not Started", "sd": "2024-07-01", "ed": "2025-06-30", "d": "General Development", "p": 0, "w": "Wabera"}, {"n": "Drilling and equipping of Kom borehole in Chari ward", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water/Irrigation", "p": 0, "w": "Chari"}, {"n": "Drilling and equipping of Garbatulla borehole in", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water/Irrigation", "p": 0, "w": "Garbatulla"}, {"n": "Drilling and equipping of Darer Dabaso Huka borehole", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water/Irrigation", "p": 0, "w": "Unspecified"}, {"n": "Drilling and equipping of Gafarsa borehole in", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water/Irrigation", "p": 0, "w": "Unspecified"}, {"n": "Drilling and equipping of Laga Aman borehole in", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water/Irrigation", "p": 0, "w": "Unspecified"}, {"n": "Drilling and equipping of Malkadaka borehole in", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water/Irrigation", "p": 0, "w": "Unspecified"}, {"n": "Excavation /construction of Malkagalla water pan in", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water/Irrigation", "p": 0, "w": "Unspecified"}, {"n": "Rehabilitation of Awarsitu Borehole", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water/Irrigation", "p": 0, "w": "Unspecified"}, {"n": "Rehabilitation of Barambate borehole", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water/Irrigation", "p": 0, "w": "Unspecified"}, {"n": "Rehabilitation of Elsa Irrigation scheme", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water/Irrigation", "p": 0, "w": "Unspecified"}, {"n": "Rehabilitation of Gafarsa borehole", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water/Irrigation", "p": 0, "w": "Unspecified"}, {"n": "Rehabilitation of Kipsing borehole", "s": "Planned", "sd": "2024-07-01", "ed": "2025-06-30", "d": "Water/Irrigation", "p": 0, "w": "Unspecified"}];
+const WARDS=['Wabera','Oldonyiro','Cherab','Garbatulla','Burat','Chari','Kinna','Ngaremara','Sericho','Bulapesa','Unspecified'];
+const STATS=['Complete','Planned','Ongoing','Operational','Not Started','Not Operational'];
+const SC={Complete:{bg:'#059652',fg:'#fff',ic:'✓'},Planned:{bg:'#e2e8f0',fg:'#475569',ic:'○'},Ongoing:{bg:'#1d4ed8',fg:'#fff',ic:'↻'},Operational:{bg:'#0d9488',fg:'#fff',ic:'▶'},'Not Started':{bg:'#fef3c7',fg:'#92400e',ic:'!'},'Not Operational':{bg:'#fee2e2',fg:'#991b1b',ic:'×'}};
+const CLR=['#059652','#64748b','#1d4ed8','#0d9488','#d97706','#b91c1c'];
+const WCOL=['#0a2342','#1a7a4a','#1d4ed8','#0d9488','#7c3aed','#b8860b','#b91c1c','#0369a1','#065f46','#9d174d','#475569'];
+const PER=25;
+const $=id=>document.getElementById(id);
+let q='',fw=[],fs=[],ff='',ft='',sk='n',sd='asc',pg=1,sbOpen=true,curWard=null,curPage='overview';
 
-    new Chart(document.getElementById('visitsChart'), {
-      type: 'bar',
-      data: {
-        labels:['Isiolo','Garbatulla','Merti'],
-        datasets:[{
-          label:'Visits',
-          data:[5000,4200,3250],
-          backgroundColor:'rgba(54,162,235,0.7)'
-        }]
-      }
-    });
-  }
-});
+const pct=(n,t)=>t?(n/t*100).toFixed(1):'0';
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const bdg=s=>{const c=SC[s]||{bg:'#e2e8f0',fg:'#475569',ic:'?'};return `<span class="bdg" style="background:${c.bg};color:${c.fg}">${c.ic} ${esc(s)}</span>`;};
+const prg=v=>{v=Math.max(0,Math.min(100,v||0));const bg=v===100?'#059652':v>=50?'#1d4ed8':v>0?'#d97706':'#e2e8f0';return `<div class="prg"><div class="prg-t"><div class="prg-f" style="width:${v}%;background:${bg}"></div></div><span class="prg-l">${v}%</span></div>`;};
+
+// ── PAGE NAVIGATION ───────────────────────────────────────────
+function goPage(p){
+  curPage=p;
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.sb-btn').forEach(el=>el.classList.remove('active'));
+  $('page-'+p).classList.add('active');
+  $('nav-'+p).classList.add('active');
+  $('bcPage').textContent=p.charAt(0).toUpperCase()+p.slice(1);
+  if(p==='projects') renderProjects();
+  if(p==='wards')    renderWards();
+  if(p==='reports')  renderReports();
+  closeMob();
+}
+
+// ── OVERVIEW ──────────────────────────────────────────────────
+function renderOverview(){
+  const t=P.length,d=P.filter(p=>p.s==='Complete').length,g=P.filter(p=>p.s==='Ongoing').length,pl=P.filter(p=>p.s==='Planned').length;
+  $('stTotal').textContent=t; $('stDone').textContent=d; $('stGoing').textContent=g; $('stPlan').textContent=pl;
+  $('stDonePct').textContent=pct(d,t)+'%'; $('stGoingPct').textContent=pct(g,t)+'%'; $('stPlanPct').textContent=pct(pl,t)+'%';
+  $('heroTotal').textContent=t+' Projects'; $('heroDone').textContent=d+' Completed'; $('donutN').textContent=t; $('donutLbl').textContent=t+' projects';
+  const h=new Date().getHours(),g2=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  $('heroH').textContent='Isiolo County Projects Portfolio';
+  $('tbDt').textContent=new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  renderBar(); renderDonut();
+}
+
+function renderBar(){
+  const area=$('barArea'); if(!area) return;
+  const W=area.clientWidth||420,H=195,ml=26,mr=6,mt=6,mb=50,cw=W-ml-mr,ch=H-mt-mb;
+  const cts=WARDS.map(w=>P.filter(p=>p.w===w).length),mx=Math.max(...cts,1),bw=cw/WARDS.length,gap=bw*.3;
+  let s=`<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">`;
+  [0,.25,.5,.75,1].forEach(f=>{const y=mt+ch*(1-f);s+=`<line x1="${ml}" y1="${y}" x2="${W-mr}" y2="${y}" stroke="#f1f5f9" stroke-width="1.5"/>`;if(f>0)s+=`<text x="${ml-4}" y="${y+4}" text-anchor="end" font-size="9" fill="#94a3b8" font-family="Inter,sans-serif">${Math.round(mx*f)}</text>`;});
+  WARDS.forEach((w,i)=>{const v=cts[i],bh=ch*(v/mx)||1,x=ml+i*bw+gap/2,y=mt+ch-bh,short=w.length>9?w.slice(0,9):w;
+    s+=`<rect x="${x}" y="${y}" width="${bw-gap}" height="${bh}" rx="3" fill="${WCOL[i]}" opacity="${v?.8:.1}"/>`;
+    s+=`<text x="${x+(bw-gap)/2}" y="${H-mb+15}" text-anchor="middle" font-size="9.5" fill="#64748b" font-family="Inter,sans-serif" transform="rotate(-38,${x+(bw-gap)/2},${H-mb+15})">${esc(short)}</text>`;
+    if(v)s+=`<text x="${x+(bw-gap)/2}" y="${y-4}" text-anchor="middle" font-size="9" fill="${WCOL[i]}" font-weight="700" font-family="Inter,sans-serif">${v}</text>`;
+  });
+  s+='</svg>'; area.innerHTML=s;
+}
+
+function renderDonut(){
+  const cts=STATS.map(s=>P.filter(p=>p.s===s).length),tot=cts.reduce((a,b)=>a+b,0)||1;
+  const R=61,r=41,cx=72,cy=72; let angle=-Math.PI/2;
+  let s='<svg width="145" height="145" viewBox="0 0 145 145" xmlns="http://www.w3.org/2000/svg">';
+  cts.forEach((v,i)=>{if(!v)return;const sw=(v/tot)*Math.PI*2,x1=cx+R*Math.cos(angle),y1=cy+R*Math.sin(angle),x2=cx+R*Math.cos(angle+sw),y2=cy+R*Math.sin(angle+sw),x3=cx+r*Math.cos(angle+sw),y3=cy+r*Math.sin(angle+sw),x4=cx+r*Math.cos(angle),y4=cy+r*Math.sin(angle),lg=sw>Math.PI?1:0;
+    s+=`<path d="M${x1},${y1} A${R},${R},0,${lg},1,${x2},${y2} L${x3},${y3} A${r},${r},0,${lg},0,${x4},${y4} Z" fill="${CLR[i]}"/>`;angle+=sw;});
+  s+='</svg>'; $('donutSvg').outerHTML=s;
+  $('donutLeg').innerHTML=STATS.map((st,i)=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:9px"><div style="width:10px;height:10px;border-radius:3px;background:${CLR[i]};flex-shrink:0"></div><span style="font-size:12px;color:var(--g700);flex:1">${esc(st)}</span><span style="font-size:12.5px;font-weight:700;color:var(--navy)">${cts[i]}</span></div>`).join('');
+}
+
+// ── PROJECTS ──────────────────────────────────────────────────
+function getList(){
+  const ql=q.toLowerCase();
+  return P.filter(p=>{
+    if(ql&&![p.n||'',p.w||'',p.d||''].join('|').toLowerCase().includes(ql))return false;
+    if(fw.length&&!fw.includes(p.w))return false;
+    if(fs.length&&!fs.includes(p.s))return false;
+    if(ff&&p.sd<ff)return false;
+    if(ft&&p.ed>ft)return false;
+    return true;
+  }).sort((a,b)=>{const av=sk==='p'?a.p:a[sk]||'',bv=sk==='p'?b.p:b[sk]||'';return sd==='asc'?(av>bv?1:-1):(av<bv?1:-1);});
+}
+function renderProjects(){
+  const list=getList(),tot=P.length,pages=Math.max(1,Math.ceil(list.length/PER));
+  if(pg>pages)pg=pages;
+  const sl=list.slice((pg-1)*PER,pg*PER);
+  $('projSubtitle').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  $('tbody').innerHTML=sl.map(p=>`<tr><td><span class="tdn" title="${esc(p.n)}">${esc(p.n)}</span></td><td>${bdg(p.s)}</td><td>${prg(p.p)}</td><td><span class="tds">${esc(p.w)}</span></td><td><span class="tdd" title="${esc(p.d)}">${esc(p.d)}</span></td><td><span class="tds">${esc(p.sd)}</span></td><td><span class="tds">${esc(p.ed)}</span></td></tr>`).join('');
+  const fr=Math.min((pg-1)*PER+1,list.length),to=Math.min(pg*PER,list.length);
+  $('pgInfo').innerHTML=`Showing <b>${fr}</b>–<b>${to}</b> of <b>${list.length}</b>`;
+  const st=Math.max(1,Math.min(pg-2,pages-4));
+  let bt=`<button class="pgb" ${pg===1?'disabled':''} onclick="goP(1)">«</button><button class="pgb" ${pg===1?'disabled':''} onclick="goP(${pg-1})">‹</button>`;
+  for(let i=st;i<=Math.min(st+4,pages);i++)bt+=`<button class="pgb${i===pg?' cur':''}" onclick="goP(${i})">${i}</button>`;
+  bt+=`<button class="pgb" ${pg===pages?'disabled':''} onclick="goP(${pg+1})">›</button><button class="pgb" ${pg===pages?'disabled':''} onclick="goP(${pages})">»</button>`;
+  $('pgBtns').innerHTML=bt;
+  const ac=fw.length+fs.length+(ff?1:0)+(ft?1:0);
+  $('actBdg').style.display=ac?'':'none'; $('btnClr').style.display=ac?'':'none';
+  if(ac)$('actBdg').textContent=ac+' filter'+(ac>1?'s':'')+' active';
+  $('resCt').innerHTML=`<b>${list.length}</b> of <b>${tot}</b> projects`;
+  $('expCt').textContent=list.length<tot?` (${list.length})`:'';
+  const wc={};WARDS.forEach(w=>wc[w]=0);P.forEach(p=>{wc[p.w]=(wc[p.w]||0)+1;});
+  $('wDDc').innerHTML=WARDS.map(w=>`<label class="ddi"><input type="checkbox" ${fw.includes(w)?'checked':''} onchange="togW('${w}')"><span style="flex:1">${esc(w)}</span><span style="font-size:11px;color:var(--g400)">${wc[w]||0}</span></label>`).join('');
+  const sc2={};STATS.forEach(s=>sc2[s]=P.filter(p=>p.s===s).length);
+  $('sDDc').innerHTML=STATS.map(s=>`<label class="ddi"><input type="checkbox" ${fs.includes(s)?'checked':''} onchange="togS('${s}')"> ${bdg(s)} <span style="margin-left:auto;font-size:11px;color:var(--g400)">${sc2[s]||0}</span></label>`).join('');
+  $('wPill').className='fp'+(fw.length?' fg':''); $('sPill').className='fp'+(fs.length?' fb':'');
+  $('wBdg').innerHTML=fw.length?`<span class="fbd" style="background:var(--green)">${fw.length}</span>`:'';
+  $('sBdg').innerHTML=fs.length?`<span class="fbd" style="background:var(--blue)">${fs.length}</span>`:'';
+  ['n','s','p','w','d','sd','ed'].forEach(k=>{const si=$('si_'+k),th=$('th_'+k);if(si)si.textContent=sk===k?(sd==='asc'?'↑':'↓'):'⇅';if(th)th.className=sk===k?'srt':'';});
+  renderSidebarWards(wc);
+}
+function renderSidebarWards(wc){
+  if(!wc){wc={};WARDS.forEach(w=>wc[w]=0);P.forEach(p=>{wc[p.w]=(wc[p.w]||0)+1;});}
+  $('wardBtns').innerHTML=WARDS.map(w=>`<button class="wb${fw.includes(w)?' on':''}" onclick="togWNav('${w}')"><span class="wn">${esc(w)}</span><span class="wchip">${wc[w]||0}</span></button>`).join('');
+}
+
+// ── WARDS ─────────────────────────────────────────────────────
+function renderWards(){
+  const wc={};WARDS.forEach(w=>wc[w]=0);P.forEach(p=>{wc[p.w]=(wc[p.w]||0)+1;});
+  $('wardCards').innerHTML=WARDS.map((w,i)=>{
+    const all=P.filter(p=>p.w===w),done=all.filter(p=>p.s==='Complete').length,going=all.filter(p=>p.s==='Ongoing').length,plan=all.filter(p=>p.s==='Planned').length;
+    return `<div class="wcard${curWard===w?' sel':''}" onclick="selectWard('${w}')">
+      <div class="wcard-bar" style="background:${WCOL[i]}"></div>
+      <div class="wcard-name">${esc(w)}</div>
+      <div class="wcard-ct">${all.length}</div>
+      <div class="wcard-lbl">projects</div>
+      <div class="wcard-row">
+        <span class="wmini" style="background:#d1fae5;color:#065f46">✓ ${done}</span>
+        ${going?`<span class="wmini" style="background:#dbeafe;color:#1e40af">↻ ${going}</span>`:''}
+        ${plan?`<span class="wmini" style="background:#f1f5f9;color:#475569">○ ${plan}</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  if(curWard) showWardProjects(curWard);
+  else { $('wardTbody').innerHTML=`<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--g400);font-size:13px">Click a ward card above to view its projects</td></tr>`; }
+}
+function selectWard(w){
+  curWard=curWard===w?null:w;
+  renderWards();
+}
+function showWardProjects(w){
+  const prjs=P.filter(p=>p.w===w);
+  $('wardTblTitle').textContent=w+' Ward Projects';
+  $('wardTblCount').textContent=prjs.length+' projects';
+  $('wardTbody').innerHTML=prjs.length?prjs.map(p=>`<tr><td><span class="tdn" title="${esc(p.n)}">${esc(p.n)}</span></td><td>${bdg(p.s)}</td><td>${prg(p.p)}</td><td><span class="tdd">${esc(p.d)}</span></td><td><span class="tds">${esc(p.sd)}</span></td><td><span class="tds">${esc(p.ed)}</span></td></tr>`).join('')
+    :`<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--g400)">No projects for this ward</td></tr>`;
+}
+
+// ── REPORTS ───────────────────────────────────────────────────
+function renderReports(){
+  // Dept table
+  const depts=[...new Set(P.map(p=>p.d))].sort();
+  const dRows=depts.map(d=>{const all=P.filter(p=>p.d===d),done=all.filter(p=>p.s==='Complete').length,r=all.length?Math.round(done/all.length*100):0;return{d,all:all.length,done,r};}).sort((a,b)=>b.all-a.all);
+  $('deptTable').innerHTML=`<table style="width:100%"><thead><tr><th>Department</th><th style="text-align:right">Total</th><th style="text-align:right">Done</th><th style="min-width:120px">Rate</th></tr></thead><tbody>${dRows.map(r=>`<tr><td style="font-weight:500;font-size:12.5px">${esc(r.d)}</td><td style="text-align:right;font-size:12px;color:var(--g500)">${r.all}</td><td style="text-align:right;font-size:12px;color:var(--green)">${r.done}</td><td><div class="rate-bar"><div class="rate-track"><div class="rate-fill" style="width:${r.r}%;background:${r.r===100?'#059652':r.r>=50?'#1d4ed8':'#d97706'}"></div></div><span style="font-size:11px;color:var(--g500);min-width:32px">${r.r}%</span></div></td></tr>`).join('')}</tbody></table>`;
+
+  // Ward completion
+  $('wardRates').innerHTML=WARDS.map((w,i)=>{const all=P.filter(p=>p.w===w),done=all.filter(p=>p.s==='Complete').length,r=all.length?Math.round(done/all.length*100):0;return`<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px"><span style="font-weight:500">${esc(w)}</span><span style="color:var(--g500)">${done}/${all.length} · <b style="color:${WCOL[i]}">${r}%</b></span></div><div class="rate-track" style="height:10px"><div class="rate-fill" style="width:${r}%;background:${WCOL[i]}"></div></div></div>`;}).join('');
+
+  // Status summary
+  const sc2={};STATS.forEach(s=>sc2[s]=P.filter(p=>p.s===s).length);
+  $('statusSummary').innerHTML=STATS.map((s,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--g100)">${bdg(s)}<div style="flex:1;margin:0 8px"><div class="rate-track" style="height:8px"><div class="rate-fill" style="width:${Math.round(sc2[s]/P.length*100)}%;background:${CLR[i]}"></div></div></div><span style="font-size:13px;font-weight:700;color:var(--navy);min-width:24px;text-align:right">${sc2[s]}</span><span style="font-size:11px;color:var(--g400);min-width:38px;text-align:right">${pct(sc2[s],P.length)}%</span></div>`).join('');
+
+  // Dept bar chart
+  const top10=dRows.slice(0,10);
+  const area=$('deptBarArea'); if(!area) return;
+  const W=area.clientWidth||380,H=220,ml=100,mr=30,mt=6,mb=20,cw=W-ml-mr,ch=H-mt-mb;
+  const mx=Math.max(...top10.map(r=>r.all),1);
+  let s=`<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">`;
+  top10.forEach((r,i)=>{const bh=Math.max(2,ch/top10.length*.65),y=mt+i*(ch/top10.length),bw=cw*(r.all/mx),dw=cw*(r.done/mx);
+    s+=`<text x="${ml-6}" y="${y+bh/2+4}" text-anchor="end" font-size="10.5" fill="#64748b" font-family="Inter,sans-serif">${esc(r.d.length>14?r.d.slice(0,14)+'…':r.d)}</text>`;
+    s+=`<rect x="${ml}" y="${y}" width="${bw}" height="${bh}" rx="3" fill="#e2e8f0"/>`;
+    s+=`<rect x="${ml}" y="${y}" width="${dw}" height="${bh}" rx="3" fill="#059652"/>`;
+    s+=`<text x="${ml+bw+4}" y="${y+bh/2+4}" font-size="10" fill="#0a2342" font-weight="600" font-family="Inter,sans-serif">${r.all}</text>`;
+  });
+  s+='</svg>'; area.innerHTML=s;
+}
+
+// ── ACTIONS ───────────────────────────────────────────────────
+function onQ(v){q=v;pg=1;if(curPage==='projects')renderProjects();}
+function doSort(k){if(sk===k)sd=sd==='asc'?'desc':'asc';else{sk=k;sd='asc';}pg=1;renderProjects();}
+function goP(p){pg=p;renderProjects();}
+function onDate(){ff=$('dFrom').value;ft=$('dTo').value;pg=1;renderProjects();}
+function togW(w){fw=fw.includes(w)?fw.filter(x=>x!==w):[...fw,w];pg=1;renderProjects();}
+function togWNav(w){fw=fw.includes(w)?fw.filter(x=>x!==w):[...fw,w];pg=1;goPage('projects');}
+function togS(s){fs=fs.includes(s)?fs.filter(x=>x!==s):[...fs,s];pg=1;renderProjects();}
+function doClear(){fw=[];fs=[];ff='';ft='';q='';try{$('searchBox').value='';$('dFrom').value='';$('dTo').value='';}catch(e){}pg=1;renderProjects();}
+function togDD(id,e){if(e)e.stopPropagation();const el=$(id);document.querySelectorAll('.ddp').forEach(p=>{if(p.id!==id)p.classList.remove('open');});el.classList.toggle('open');}
+document.addEventListener('click',()=>document.querySelectorAll('.ddp').forEach(p=>p.classList.remove('open')));
+
+function toggleSb(){
+  sbOpen=!sbOpen;const sb=$('sb');
+  if(window.innerWidth<=768){sb.classList.toggle('mob-open',sbOpen);$('ovl').classList.toggle('on',sbOpen);return;}
+  sb.classList.toggle('slim',!sbOpen);
+  ['sbTxt','sbSrch','sbNavLbl'].forEach(id=>{const el=$(id);if(el)el.style.display=sbOpen?'':'none';});
+  $('sbWards').style.display=sbOpen?'':'none';
+  document.querySelectorAll('.sb-btn .lbl').forEach(el=>el.style.display=sbOpen?'':'none');
+  $('sbArr').textContent=sbOpen?'←':'→'; $('sbCollTxt').textContent=sbOpen?' Collapse':'';
+  if(sbOpen)setTimeout(()=>{renderBar();if(curPage==='reports')renderReports();},250);
+}
+function openMob(){sbOpen=true;$('sb').classList.add('mob-open');$('ovl').classList.add('on');}
+function closeMob(){sbOpen=false;$('sb').classList.remove('mob-open');$('ovl').classList.remove('on');}
+
+function doExport(){
+  const list=getList(),cols=['n','s','sd','ed','d','p','w'],heads=['Project Name','Status','Start Date','End Date','Department','Progress','Ward'];
+  const e=v=>'"'+String(v||'').replace(/"/g,'""')+'"';
+  const body=[heads.map(e).join(','),...list.map(r=>cols.map(c=>e(r[c])).join(','))].join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(body);
+  a.download='isiolo-projects-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+}
+
+let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{renderBar();if(curPage==='reports')renderReports();},150);});
+
+// ── INIT ──────────────────────────────────────────────────────
+renderOverview();
+renderSidebarWards();
 </script>
-
 </body>
 </html>
