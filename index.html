@@ -4,163 +4,88 @@
   <meta charset="UTF-8">
   <title>Isiolo County Dashboard</title>
 
-  <!-- Bootstrap -->
+  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    body {
-      background: #f5f7fa;
-    }
-    .card {
-      border-radius: 12px;
-    }
-    .metric {
-      font-size: 24px;
-      font-weight: bold;
-    }
-    .insight {
-      background: #fff3cd;
-      padding: 15px;
-      border-radius: 10px;
-    }
+    body { background: #f5f7fa }
+    .card { border-radius: 12px }
+    .metric { font-size: 24px; font-weight: bold }
+    .insight { background: #fff3cd; padding: 15px; border-radius: 10px }
   </style>
 </head>
 
 <body>
-
 <div class="container my-4">
 
   <h2 class="mb-4">Isiolo County Health & Nutrition Dashboard</h2>
 
-  <!-- Top Metrics -->
   <div class="row g-3 mb-4">
-    <div class="col-md-3">
-      <div class="card p-3">
-        <div>Malnutrition Rate</div>
-        <div class="metric text-danger">18% ↑</div>
-      </div>
-    </div>
-
-    <div class="col-md-3">
-      <div class="card p-3">
-        <div>Health Visits (Monthly)</div>
-        <div class="metric">12,450 ↑</div>
-      </div>
-    </div>
-
-    <div class="col-md-3">
-      <div class="card p-3">
-        <div>Water Access</div>
-        <div class="metric text-success">62% ↑</div>
-      </div>
-    </div>
-
-    <div class="col-md-3">
-      <div class="card p-3">
-        <div>Active Projects</div>
-        <div class="metric">14</div>
-      </div>
-    </div>
+    <div class="col-md-3"><div class="card p-3"><div>Malnutrition Rate</div><div class="metric text-danger">18% ↑</div></div></div>
+    <div class="col-md-3"><div class="card p-3"><div>Health Visits</div><div class="metric">12,450 ↑</div></div></div>
+    <div class="col-md-3"><div class="card p-3"><div>Water Access</div><div class="metric text-success">62% ↑</div></div></div>
+    <div class="col-md-3"><div class="card p-3"><div>Active Projects</div><div class="metric">14</div></div></div>
   </div>
 
-  <!-- Charts -->
   <div class="row mb-4">
-    <div class="col-md-6">
-      <div class="card p-3">
-        <h5>Malnutrition Trend</h5>
-        <canvas id="malnutritionChart"></canvas>
-      </div>
-    </div>
-
-    <div class="col-md-6">
-      <div class="card p-3">
-        <h5>Facility Visits by Sub-County</h5>
-        <canvas id="visitsChart"></canvas>
-      </div>
-    </div>
+    <div class="col-md-6"><div class="card p-3"><h5>Malnutrition Trend</h5><canvas id="malnutritionChart"></canvas></div></div>
+    <div class="col-md-6"><div class="card p-3"><h5>Facility Visits</h5><canvas id="visitsChart"></canvas></div></div>
   </div>
 
-  <!-- Projects Table -->
   <div class="card p-3 mb-4">
     <h5>Projects Tracker</h5>
     <table class="table">
-      <thead>
-        <tr>
-          <th>Project</th>
-          <th>Location</th>
-          <th>Status</th>
-          <th>Progress</th>
-        </tr>
-      </thead>
+      <thead><tr><th>Project</th><th>Location</th><th>Status</th><th>Progress</th></tr></thead>
       <tbody>
-        <tr>
-          <td>Borehole Drilling</td>
-          <td>Sericho</td>
-          <td>Ongoing</td>
-          <td>70%</td>
-        </tr>
-        <tr>
-          <td>Nutrition Program</td>
-          <td>Merti</td>
-          <td>Delayed</td>
-          <td>40%</td>
-        </tr>
-        <tr>
-          <td>Health Centre Upgrade</td>
-          <td>Garbatulla</td>
-          <td>Complete</td>
-          <td>100%</td>
-        </tr>
+        <tr><td>Borehole Drilling</td><td>Sericho</td><td>Ongoing</td><td>70%</td></tr>
+        <tr><td>Nutrition Program</td><td>Merti</td><td>Delayed</td><td>40%</td></tr>
+        <tr><td>Facility Upgrade</td><td>Garbatulla</td><td>Complete</td><td>100%</td></tr>
       </tbody>
     </table>
   </div>
 
-  <!-- Insights -->
   <div class="insight">
     <strong>Insights:</strong><br>
     - Malnutrition rising in Merti<br>
-    - Garbatulla shows highest facility visits<br>
+    - Garbatulla leads visits<br>
     - 2 projects behind schedule
   </div>
 
 </div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    // Malnutrition Trend Chart
-    if (typeof Chart !== "undefined") {
-      const malnutritionChart = new Chart(document.getElementById('malnutritionChart'), {
-        type: 'line',
-        data: {
-          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-          datasets: [{
-            label: 'Malnutrition %',
-            data: [12, 14, 13, 16, 18],
-            borderColor: 'rgba(255, 99, 132, 1)',
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            borderWidth: 2
-          }]
-        }
-      });
+document.addEventListener("DOMContentLoaded", function () {
+  if (typeof Chart !== "undefined") {
+    new Chart(document.getElementById('malnutritionChart'), {
+      type: 'line',
+      data: {
+        labels: ['Jan','Feb','Mar','Apr','May'],
+        datasets: [{
+          label: 'Malnutrition %',
+          data: [12,14,13,16,18],
+          borderColor: 'rgba(255,99,132,1)',
+          backgroundColor:'rgba(255,99,132,0.2)',
+          borderWidth:2
+        }]
+      }
+    });
 
-      // Visits Chart
-      const visitsChart = new Chart(document.getElementById('visitsChart'), {
-        type: 'bar',
-        data: {
-          labels: ['Isiolo', 'Garbatulla', 'Merti'],
-          datasets: [{
-            label: 'Visits',
-            data: [5000, 4200, 3250],
-            backgroundColor: 'rgba(54, 162, 235, 0.7)',
-            borderWidth: 1
-          }]
-        }
-      });
-    }
-  });
+    new Chart(document.getElementById('visitsChart'), {
+      type: 'bar',
+      data: {
+        labels:['Isiolo','Garbatulla','Merti'],
+        datasets:[{
+          label:'Visits',
+          data:[5000,4200,3250],
+          backgroundColor:'rgba(54,162,235,0.7)'
+        }]
+      }
+    });
+  }
+});
 </script>
 
 </body>
